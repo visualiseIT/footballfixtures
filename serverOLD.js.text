@@ -1,0 +1,187 @@
+var http = require('http');
+//var request = require('ahr');
+var jsdom = require('jsdom');
+
+http.createServer(function(req, res) {
+
+    console.log("start...");
+
+    var headers = {
+        'content-type': 'application/json',
+        'accept': 'application/json'
+    };
+    var url = 'http://www.bbc.co.uk/sport/football/fixtures';
+
+    var options = {
+        host: 'www.bbc.co.uk',
+        path: '/sport/football/fixtures'
+    };
+
+    jsdom.env({
+        html: 'http://www.bbc.co.uk/sport/football/fixtures',
+        //          src: [
+        //            jquery
+        //          ],
+        //            scripts: [
+        //                'http://code.jquery.com/jquery-1.5.min.js'
+        //              ] 
+    }, function(errors, window) {
+
+        console.log("callback...");
+
+        var $ = window.$;
+
+        jsdom.jQueryify(window, 'http://code.jquery.com/jquery-1.4.2.min.js', function() {
+
+
+            var parseHTML = function(window) {
+                var self = this;
+
+                var teams = [];
+                var games = [];
+
+                var teamsN = window.$('span[class~="teams"] a');
+                teamsN.each(function(item) {
+                    var a = window.$(this);
+
+                    if (teams.indexOf(a.text) === -1) {
+                        teams.push(a.text);
+                        console.log(a.text);
+                    }
+                });
+                //                    window.$('div[id="prod_detail"]').each(function(){
+                //                        var item  = window.$(this);
+                //                 
+                //                        var title = item.find('#prod_detail2').find('font[id="book-titl"]').text();
+                //                        var link = item.find('#prod_detail2').find('a').attr('href');
+                //                        var author = item.find('#prod_detail2').find('font[id="book-auth"]').text();
+                //                        var price = item.find('#prod_detail2').find('font[id="book-pric"]').text();
+                //                 
+                //                        self.onItem({
+                //                            title: title,
+                //                            link: link,
+                //                            author: author,
+                //                            price: price
+                //                        });
+                //                    });
+
+                var tables = $('table[class~="table-stats"]');
+                tables.each(function(table) {
+
+                    console.log("each table...");
+
+                    var matchdetails = $(table).find('td');
+                    //                var matchdetails = $(table).find('td[class~="match-details"]');
+
+                    console.log("matchdetails.length = " + matchdetails.length);
+
+                    matchdetails.each(function(td) {
+
+                        console.log("each matchdetails...");
+
+                        var hometeam = $(this).find('span[class~="team-home"] a').text();
+                        var awayteam = $(this).find('span[class~="team-away"] a').text();
+                        var score = $(this).find('abbr[title="score"]').text();
+                        var time = $(this).find('td[class="time"]').text();
+
+                        games.push({
+                            hometeam: hometeam,
+                            awayteam: awayteam,
+                            score: score,
+                            time: time
+                        });
+                    });
+
+                });
+
+                teamsJSON = {
+                    status: "success",
+                    data: {
+                        "teams": teams,
+                        "games": games
+                    }
+                }
+
+                return teamsJSON = JSON.stringify(teamsJSON);
+
+            };
+
+            var results = parseHTML(window);
+
+
+        });
+
+        //            $('a').each(function(){
+        //              console.log( $(this).attr('href') );
+        //            });
+
+       
+
+
+
+    });
+
+    /*
+    request({uri: url, method: 'GET', headers: headers, timeout: 10000}, function(err, response, html) {
+        
+        if (err) {
+//            self.onError({error: err, searcher: self});
+//            self.onComplete({searcher: self});
+        } else {
+            console.log('Fetched content from... ' + url);
+            // create DOM window from HTML data
+            var window = jsdom.jsdom(html).createWindow();
+            // load jquery with DOM window and call the parser!
+            jsdom.jQueryify(window, 'http://code.jquery.com/jquery-1.4.2.min.js', function() {
+                
+                    
+                var parseHTML = function(window) {
+                    var self = this;
+                 
+                    var teams = [];
+                    var games = [];
+                    
+                    window.$('span[class~="teams"] a').each(function(a) {
+                        a = window.$(this);
+                        
+                        if (teams.indexOf(a.text) === -1)
+                        {
+                            teams.push(a.text); 
+                            console.log(a.text);
+                        }
+                    });
+//                    window.$('div[id="prod_detail"]').each(function(){
+//                        var item  = window.$(this);
+//                 
+//                        var title = item.find('#prod_detail2').find('font[id="book-titl"]').text();
+//                        var link = item.find('#prod_detail2').find('a').attr('href');
+//                        var author = item.find('#prod_detail2').find('font[id="book-auth"]').text();
+//                        var price = item.find('#prod_detail2').find('font[id="book-pric"]').text();
+//                 
+//                        self.onItem({
+//                            title: title,
+//                            link: link,
+//                            author: author,
+//                            price: price
+//                        });
+//                    });
+                        
+                    return {
+                        teams:teams,
+                        games:games
+                    }
+                };    
+                
+                var results = parseHTML(window);
+                
+                
+            });
+        }
+    });
+*/
+
+    res.writeHead(200, {
+        'Content-Type': 'text/plain'
+    });
+    res.end('Hello World from Cloud79');
+}).listen(process.env.PORT);
