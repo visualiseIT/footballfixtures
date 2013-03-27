@@ -1,7 +1,7 @@
 var http = require('http');
 var scrap = require('scrap');
 var url = require('url');
-var jq = require('jquery');
+
 
 //var teamsJSON;
 var timestamp = 0;
@@ -77,92 +77,7 @@ function doScrape() {
     });
 }
 
-function doScrapeOLD() {
 
-    console.log('doScrape');
-
-    teams = [];
-    games = [];
-
-    scrap('http://www.bbc.co.uk/sport/football/fixtures', function(err, $) {
-
-
-        var teamNodes = $('span[class~="teams"]');
-
-        //console.log(teamNodes.length);
-
-        teamNodes.each(function(err, a, b) {
-            var teamName = $(a).text().trim();
-            if (teams.indexOf(teamName) === -1) {
-                teams.push(teamName);
-            }
-        });
-        
-        
-        var tables = $('table[class~="table-stats"]');
-
-        //console.log(tables.length);
-
-        tables.each(function(index, table) {
-
-            var matchdetails = $(table).find('td[class="match-details"]');
-
-            //console.log(matchdetails.length);
-
-            matchdetails.each(function(index, tdXml) {
-
-                var $td = $(this);               
-
-                var hometeam = $td.find('span[class~="team-home"]').text().trim();
-                var awayteam = $td.find('span[class~="team-away"]').text().trim();
-                var score = $td.find('span[class="score"]').text().trim();
-
-                //var test = $td.is("td");
-
-                var parentTable = jq($td).parents('table[class~="table-stats"]').first();
-
-                var date = getGameDate(parentTable, $);
-                var time = $td.next().text().trim();
-
-                games.push({
-                    hometeam: hometeam,
-                    awayteam: awayteam,
-                    score: score,
-                    date:date,
-                    time: time
-                });
-            });
-
-        });
-
-        function getGameDate(table, $){
-            
-            // var prev = $td.prev();
-            // 
-            // var $prev = $(prev);
-            
-            var jq_prev = jq(table)
-            
-            var test = jq_prev.parent('table[class~="table-stats"]');
-            
-            if (jq_prev.is("h2"))
-            {
-                return jq_prev.text();
-            }
-            else
-            {                
-                return getGameDate(table.prev());
-            }
-            
-        }
-
-
-        
-        timestamp = new Date().getTime();
-
-
-    });
-}
 
 
 doScrape();
