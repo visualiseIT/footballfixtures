@@ -1,2 +1,3 @@
 {"ts":1364315447692,"silentsave":true,"restoring":false,"patch":[[]],"length":0}
 {"contributors":[],"silentsave":false,"ts":1364315458305,"patch":[[{"diffs":[[1,"node_modules/"]],"start1":0,"start2":0,"length1":0,"length2":13}]],"length":13,"saved":false}
+{"contributors":[],"silentsave":false,"ts":1364350612493,"patch":[[{"diffs":[[0,"modules/"],[1,"\nheroku-client/"]],"start1":5,"start2":5,"length1":8,"length2":23}]],"length":28,"saved":false}
